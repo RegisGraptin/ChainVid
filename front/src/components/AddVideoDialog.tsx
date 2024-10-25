@@ -17,6 +17,9 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 export function AddVideoDialog() {
   const [open, setOpen] = React.useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -30,6 +33,26 @@ export function AddVideoDialog() {
 
     const formData = new FormData(event.currentTarget)
  
+    setUploading(true);
+    
+    console.log(formData)
+    console.log(formData.get("fileVideo"))
+
+    const data = new FormData();
+    data.set("file", formData.get("fileVideo"));
+
+    const uploadRequest = await fetch("/api/files", {
+      method: "POST",
+      body: data,
+    });
+    console.log(uploadRequest);
+    const cid = await uploadRequest.json();
+    console.log(cid);
+
+
+    setUploading(false);
+
+
     console.log("On click he")
     console.log(formData)
   }
@@ -142,8 +165,8 @@ export function AddVideoDialog() {
             </label>
           </DialogBody>
           <DialogFooter>
-            <Button className="ml-auto" type="submit">
-              Add video
+            <Button className="ml-auto" type="submit" disabled={uploading}>
+              {uploading ? "Uploading..." : "Add video"}
             </Button>
           </DialogFooter>
           </form>
