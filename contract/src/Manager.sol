@@ -11,6 +11,11 @@ contract Manager {
 
     Video video;
 
+    // User access to the video
+    // FIXME: Maybe use NFT instead allowing future resell of access token
+    // FIXME: Could be interesting to add a royalties mechansm
+    mapping(uint256 => mapping (address => bool)) public access;
+
     constructor() {
         video = new Video(address(this));
     }
@@ -21,10 +26,14 @@ contract Manager {
         string memory videoURI
     ) public 
     {
-
         SharedOwnership sharedOwner = new SharedOwnership(owners, allocation);
         
-        video.addNewVideo(address(sharedOwner), videoURI);
+        uint256 videoId = video.addNewVideo(address(sharedOwner), videoURI);
+
+        // Give access to the video for all owners
+        for (uint256 i = 0; i < owners.length; i++) {
+            access[videoId][owners[i]] = true;
+        }
     }
 
 }

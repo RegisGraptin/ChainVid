@@ -15,52 +15,15 @@ https://book.getfoundry.sh/
 
 ## Usage
 
-### Build
-
 ```shell
-$ forge build
+# To load the variables in the .env file
+source .env
+
+# To deploy and verify our contract
+forge script --chain scroll script/Manager.s.sol:ManagerScript --rpc-url $OP_SEP_RPC_URL --broadcast --verify -vvvv
 ```
 
-### Test
 
-```shell
-$ forge test
-```
+## Contract address
 
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+0x124ef5852073594FC3d7475CB617EC17140e8009
