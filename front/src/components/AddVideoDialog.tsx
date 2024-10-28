@@ -30,7 +30,7 @@ export function AddVideoDialog() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   
-  const account = useAccount()
+  const account = useAccount();
 
   const [cid, setCid] = useState(null);
   const [metadata, setMetadata] = useState(null);

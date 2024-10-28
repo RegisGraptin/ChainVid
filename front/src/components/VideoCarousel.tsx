@@ -35,7 +35,7 @@ export default function VideoCarousel({}: {}) {
     <div className="grid grid-cols-4 gap-4 p-4 justify-center">
       <AddVideoCard />
       {videos && videos.map((video, index) => (
-        <VideoCard key={index} video={video.result} />
+        <VideoCard key={index} videoId={index} video={video.result} />
       ))}
     </div>
   );

@@ -8,8 +8,27 @@ import {
     Tooltip,
     IconButton,
   } from "@material-tailwind/react";
+import { Address } from "viem";
+import { useAccount, useReadContract } from "wagmi";
    
-  export function VideoCard({video}) {
+import Manager from "../abi/Manager.json";
+
+export function VideoCard({videoId, video}) {
+
+  const account = useAccount();
+
+  const { data: hasAccess, isLoading: hasAccessLoading, error } = useReadContract({
+    address: process.env.NEXT_PUBLIC_CONTRACT_MANAGER_ADDRESS as Address,
+    abi: Manager.abi,
+    functionName: 'access',
+    args: [
+      Number(videoId),
+      account.address
+    ],
+  })
+
+  console.log(hasAccess);
+  console.log(error);
 
     return (
       <Card className="w-full max-w-[26rem] shadow-lg ml-2 mr-2 mb-4">
@@ -34,9 +53,21 @@ import {
           </Typography>
         </CardBody>
         <CardFooter className="pt-3" style={{marginTop: "auto"}}>
-          <Button size="lg" fullWidth={true}>
-            Buy
-          </Button>
+          {account.address && hasAccessLoading && (
+            <Button disabled={true} loading={true} size="lg" fullWidth={true}>
+              Loading...
+            </Button>
+          )}
+          {!hasAccessLoading && hasAccess === true && (
+            <Button size="lg" fullWidth={true} variant="outlined">
+              See Video
+            </Button>
+          )}
+          {(account.address === undefined || (!hasAccessLoading && !hasAccess)) && (
+            <Button size="lg" fullWidth={true}>
+              Buy
+            </Button>
+          )}
         </CardFooter>
       </Card>
     );
