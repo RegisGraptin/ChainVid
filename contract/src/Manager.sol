@@ -23,13 +23,22 @@ contract Manager {
     function addNewVideo(
         address[] memory owners,
         uint256[] memory allocation,
+        string memory name, 
+        string memory category,
+        string memory description,
         string memory videoURI
     ) public 
     {
         SharedOwnership sharedOwner = new SharedOwnership(owners, allocation);
         
         Video video = Video(videoAddress);
-        uint256 videoId = video.addNewVideo(address(sharedOwner), videoURI);
+        uint256 videoId = video.addNewVideo(
+            address(sharedOwner), 
+            name,
+            category,
+            description,
+            videoURI
+        );
 
         // Give access to the video for all owners
         for (uint256 i = 0; i < owners.length; i++) {

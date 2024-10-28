@@ -33,6 +33,7 @@ export function AddVideoDialog() {
   const account = useAccount()
 
   const [cid, setCid] = useState(null);
+  const [metadata, setMetadata] = useState(null);
 
   const [ownerAddresses, setOwnerAddresses] = useState<OwnerEntry[]>([{address: account.address?.toString() || "", percent: 100}]);
 
@@ -75,6 +76,8 @@ export function AddVideoDialog() {
     console.log(formData)
     console.log(formData.get("fileVideo"))
 
+    setMetadata(formData);
+
     const data = new FormData();
     data.set("file", formData.get("fileVideo"));
 
@@ -87,6 +90,7 @@ export function AddVideoDialog() {
     console.log(_cid);
     setCid(_cid["cid"])
 
+    
     handleOpenVideo();
     setUploading(false);
     handleOpenOwner();
@@ -103,6 +107,9 @@ export function AddVideoDialog() {
     // Get all allocation 
     const allocation = ownerAddresses.map((entry) => entry.percent);
 
+    console.log("metadata");
+    console.log(metadata);
+
     // Add a new video
     writeContract({
       abi: Manager.abi,
@@ -111,6 +118,9 @@ export function AddVideoDialog() {
       args: [
           owners,
           allocation,
+          metadata.get("name"),
+          metadata.get("category"),
+          metadata.get("description"),
           cid,
       ],
     })
