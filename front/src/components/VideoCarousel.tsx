@@ -22,18 +22,20 @@ export default function VideoCarousel({}: {}) {
     contracts: Array.from({ length: Number(lastTokenId) }).map(
       (_, index) => ({
         abi: Video.abi,
-        address: process.env.NEXT_PUBLIC_SEI_CONTRACT as Address,
-        functionName: "tokenURI",
+        address: process.env.NEXT_PUBLIC_CONTRACT_VIDEO_ADDRESS as Address,
+        functionName: "getMetadata",
         args: [index],
       })
     ),
   });
 
+  console.log(videos);
+
   return (
     <div className="grid grid-cols-4 gap-4 p-4 justify-center">
       <AddVideoCard />
       {videos && videos.map((video, index) => (
-        <VideoCard key={index} video={video} />
+        <VideoCard key={index} video={video.result} />
       ))}
     </div>
   );

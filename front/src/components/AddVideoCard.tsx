@@ -17,6 +17,9 @@ import { AddVideoDialog } from "./AddVideoDialog";
           <img
             src="/images/add_video.jpg"
             alt="ui/ux review check"
+            width={400}
+            height={300}
+            className="w-full h-64 object-cover"
           />
           <div className="to-bg-black-10 absolute inset-0 h-full w-full bg-gradient-to-tr from-transparent via-transparent to-black/60 " />
         </CardHeader>
