@@ -52,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 Number(data["tokenId"])
             ],
         });
-        const cid = metadata[3];
+        const cid = metadata[4];
         console.log(cid);
 
         // Create a pinata link for the video

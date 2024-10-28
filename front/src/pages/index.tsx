@@ -25,7 +25,7 @@ const Home: NextPage = () => {
       </main>
 
       <footer className={styles.footer}>
-        <h3>Video Share</h3>
+        <h3>ChainVid - Share you video with the trust of the blockchain</h3>
       </footer>
     </div>
     </>

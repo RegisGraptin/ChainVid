@@ -4,7 +4,7 @@ import {
 } from 'wagmi/chains';
 
 export const config = getDefaultConfig({
-  appName: 'RainbowKit App',
+  appName: 'ChainVid',
   projectId: 'YOUR_PROJECT_ID',
   chains: [
     optimismSepolia,

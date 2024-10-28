@@ -9,6 +9,8 @@ contract SharedOwnership is ERC20 {
     address[] public owners;
     mapping (address => bool) isOwner;
 
+    bool inPayment;
+
     constructor(
         address[] memory _owners, 
         uint256[] memory allocation
@@ -45,9 +47,22 @@ contract SharedOwnership is ERC20 {
 
     }
 
-
-    // function distributeRevenue() {
-
-    // }
     
+    function pay() public {
+        require(!inPayment, "Invalid state");
+        inPayment = true;
+        
+        uint balance = address(this).balance;
+
+        for (uint256 i = 0; i < owners.length; i++) {
+            uint share = balance * this.balanceOf(owners[i]) / this.totalSupply();
+            (bool sent, bytes memory data) = owners[i].call{value: share}("");
+            // FIXME :: optimzied future version / what happened if invalid address 
+        }   
+
+        inPayment = false;
+    }
+
+    // Accept to received fund
+    receive() external payable {}
 }

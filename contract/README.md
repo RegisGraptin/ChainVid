@@ -25,8 +25,10 @@ forge script --chain scroll script/Manager.s.sol:ManagerScript --rpc-url $OP_SEP
 
 
 ## Contract address
- │   └─ ← [Return] 
-    ├─ [2705923] → new Manager@0x2C3F4AB3D9C070032Acb46dFb5944bD94C4b79C6
-    │   ├─ [1416276] → new Video@0x2C33241E491dbDAdAf9cC0B74A10f36Eaad1C88A
-    │   │   └─ ← [Return] 6737 bytes of code
-    │   └─ ← [Return] 6166 bytes of code
+
+
+[3213041] → new Manager@0x6E5AE454012F3B9F8DD113aD6bCF9D53f7d839fc
+  ├─ [1697981] → new Video@0xc3eAc00AaFbf5E35D34e0367F434CfF8e8B03947
+  │   └─ ← [Return] 8144 bytes of code
+  └─ ← [Return] 7291 bytes of code
+

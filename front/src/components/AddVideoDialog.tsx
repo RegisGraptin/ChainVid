@@ -16,7 +16,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useWriteContract } from "wagmi";
  
 import Manager from "../abi/Manager.json";
-import { Address } from "viem";
+import { Address, parseEther } from "viem";
 import { useAccount } from 'wagmi'
 
 type OwnerEntry = {
@@ -110,6 +110,8 @@ export function AddVideoDialog() {
     console.log("metadata");
     console.log(metadata);
 
+    console.log(parseEther(metadata.get("price")));
+
     // Add a new video
     writeContract({
       abi: Manager.abi,
@@ -121,6 +123,7 @@ export function AddVideoDialog() {
           metadata.get("name"),
           metadata.get("category"),
           metadata.get("description"),
+          parseEther(metadata.get("price")),
           cid,
       ],
     })
@@ -195,6 +198,28 @@ export function AddVideoDialog() {
                 <Option>Food</Option>
                 <Option>Travel</Option>
               </Select>
+            </div>
+            <div>
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Price
+              </Typography>
+              <Input
+                color="gray"
+                size="lg"
+                placeholder="0.1 ETH"
+                name="price"
+                className="placeholder:opacity-100 focus:!border-t-gray-900"
+                containerProps={{
+                  className: "!min-w-full",
+                }}
+                labelProps={{
+                  className: "hidden",
+                }}
+              />
             </div>
             <div>
               <Typography

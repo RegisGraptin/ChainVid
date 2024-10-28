@@ -12,8 +12,8 @@ import {
     DialogFooter,
   } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Address } from "viem";
-import { useAccount, useReadContract, useSignMessage } from "wagmi";
+import { Address, formatEther, parseEther } from "viem";
+import { useAccount, useReadContract, useSignMessage, useWriteContract } from "wagmi";
    
 import Manager from "../abi/Manager.json";
 import React from "react";
@@ -72,6 +72,21 @@ export function VideoCard({videoId, video}) {
     })
   }
 
+  const { data, error: writeError, writeContract, isPending, isError } = useWriteContract()
+
+  const buyAction = () => {
+
+    console.log(video.price)
+
+    // Buy action
+    writeContract({
+      abi: Manager.abi,
+      address: process.env.NEXT_PUBLIC_CONTRACT_MANAGER_ADDRESS as Address,
+      functionName: 'buyVideo',
+      args: [Number(videoId)],
+      value: video.price
+    })
+  }
 
     return (
       <>
@@ -94,6 +109,7 @@ export function VideoCard({videoId, video}) {
           </div>
           <Typography color="gray">
             {video.description}
+            {writeError?.message}
           </Typography>
         </CardBody>
         <CardFooter className="pt-3" style={{marginTop: "auto"}}>
@@ -108,8 +124,8 @@ export function VideoCard({videoId, video}) {
             </Button>
           )}
           {(account.address === undefined || (!hasAccessLoading && !hasAccess)) && (
-            <Button size="lg" fullWidth={true}>
-              Buy
+            <Button size="lg" fullWidth={true} onClick={buyAction} disabled={isPending} loading={isPending} >
+              Buy {formatEther(video.price)} ETH
             </Button>
           )}
         </CardFooter>

@@ -26,6 +26,7 @@ contract Manager {
         string memory name, 
         string memory category,
         string memory description,
+        uint price,
         string memory videoURI
     ) public 
     {
@@ -37,6 +38,7 @@ contract Manager {
             name,
             category,
             description,
+            price,
             videoURI
         );
 
@@ -44,6 +46,13 @@ contract Manager {
         for (uint256 i = 0; i < owners.length; i++) {
             access[videoId][owners[i]] = true;
         }
+    }
+
+    function buyVideo(uint256 videoId) public payable {
+        Video video = Video(videoAddress);
+        bool sent = video.buy{value: msg.value}(videoId);
+        require(sent, "Issue when buying");
+        access[videoId][msg.sender] = true;
     }
 
 }
