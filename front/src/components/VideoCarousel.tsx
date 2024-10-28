@@ -1,15 +1,38 @@
+
+import { Address } from "viem";
+
 import { AddVideoCard } from "./AddVideoCard";
 import { VideoCard } from "./VideoCard";
 
-export default function VideoCarousel({
-  videos,
-}: {
-  videos: any[];
-}) {
+import Video from "../abi/Video.json";
+import { useReadContract, useReadContracts } from "wagmi";
+
+
+export default function VideoCarousel({}: {}) {
+
+  // Fetch the number of id
+  const { data: lastTokenId, isLoading: lastTokenIdLoading } = useReadContract({
+    address: process.env.NEXT_PUBLIC_CONTRACT_VIDEO_ADDRESS as Address,
+    abi: Video.abi,
+    functionName: 'nextTokenId',
+    args: [],
+  })
+
+  const { data: videos, isLoading: videosLoading } = useReadContracts({
+    contracts: Array.from({ length: Number(lastTokenId) }).map(
+      (_, index) => ({
+        abi: Video.abi,
+        address: process.env.NEXT_PUBLIC_SEI_CONTRACT as Address,
+        functionName: "tokenURI",
+        args: [index],
+      })
+    ),
+  });
+
   return (
     <div className="grid grid-cols-4 gap-4 p-4 justify-center">
       <AddVideoCard />
-      {videos.map((video, index) => (
+      {videos && videos.map((video, index) => (
         <VideoCard key={index} video={video} />
       ))}
     </div>

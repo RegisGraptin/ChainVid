@@ -6,7 +6,7 @@ import {ERC721URIStorage, ERC721} from "@openzeppelin/contracts/token/ERC721/ext
 
 contract Video is ERC721URIStorage {
     
-    uint256 public _nextTokenId;
+    uint256 public nextTokenId;
 
     address manager;
 
@@ -24,7 +24,7 @@ contract Video is ERC721URIStorage {
         public 
         returns (uint256) 
     {
-        uint256 tokenId = _nextTokenId++;
+        uint256 tokenId = nextTokenId++;
         _mint(owner, tokenId);
         _setTokenURI(tokenId, videoURI);
         return tokenId;

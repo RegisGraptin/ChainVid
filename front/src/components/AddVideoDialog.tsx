@@ -13,20 +13,57 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useWriteContract } from "wagmi";
  
+import Manager from "../abi/Manager.json";
+import { Address } from "viem";
+import { useAccount } from 'wagmi'
+
+type OwnerEntry = {
+  address: string;
+  percent: number;
+}
+
 export function AddVideoDialog() {
-  const [open, setOpen] = React.useState(false);
+  const [openVideo, setOpenVideo] = React.useState(false);
+  const [openOwner, setOpenOwner] = React.useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  
+  const account = useAccount()
 
+  const [cid, setCid] = useState(null);
 
+  const [ownerAddresses, setOwnerAddresses] = useState<OwnerEntry[]>([{address: account.address?.toString() || "", percent: 100}]);
+
+  const addOwnerEntry = () => {
+    const values = [...ownerAddresses];
+    values.push({address: "", percent: 0});
+    setOwnerAddresses(values);
+  }
+
+  function handleRemoveOwner(i: number) {
+      if (ownerAddresses.length == 1) { return; }
+      const values = [...ownerAddresses];
+      values.splice(i, 1);
+      setOwnerAddresses(values);
+  }
+
+  function handleChange(i: number, field: keyof OwnerEntry, event: any) {
+      const values = [...ownerAddresses];
+      values[i] = {...values[i], [field]: field === "percent" ? Number(event.target.value) : event.target.value}
+      setOwnerAddresses(values);
+  }
+
+  const { data, error, writeContract, isPending, isError } = useWriteContract()
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file ? file.name : null); // Store file name in state
   };
 
-  const handleOpen = () => setOpen(!open);
+  const handleOpenVideo = () => setOpenVideo(!openVideo);
+  const handleOpenOwner = () => setOpenOwner(!openOwner);
   
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -46,25 +83,48 @@ export function AddVideoDialog() {
       body: data,
     });
     console.log(uploadRequest);
-    const cid = await uploadRequest.json();
-    console.log(cid);
+    const _cid = await uploadRequest.json();
+    console.log(_cid);
+    setCid(_cid["cid"])
 
-
+    handleOpenVideo();
     setUploading(false);
-
-
-    console.log("On click he")
-    console.log(formData)
+    handleOpenOwner();
   }
- 
+
+
+
+  async function onSubmitOwner(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    
+    // Get all owners
+    const owners = ownerAddresses.map((entry) => entry.address);
+
+    // Get all allocation 
+    const allocation = ownerAddresses.map((entry) => entry.percent);
+
+    // Add a new video
+    writeContract({
+      abi: Manager.abi,
+      address: process.env.NEXT_PUBLIC_CONTRACT_MANAGER_ADDRESS as Address,
+      functionName: 'addNewVideo',
+      args: [
+          owners,
+          allocation,
+          cid,
+      ],
+    })
+  }
   
 
   return (
     <>
-        <Button onClick={handleOpen} size="lg" fullWidth={true}>
+        <Button onClick={handleOpenVideo} size="lg" fullWidth={true}>
           Add your video
         </Button>
-        <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
+
+        {/* Dialog for storing the video */}
+        <Dialog size="sm" open={openVideo} handler={handleOpenVideo} className="p-4">
           <form onSubmit={onSubmit}>
           <DialogHeader className="relative m-0 block">
             <Typography variant="h4" color="blue-gray">
@@ -77,7 +137,7 @@ export function AddVideoDialog() {
               size="sm"
               variant="text"
               className="!absolute right-3.5 top-3.5"
-              onClick={handleOpen}
+              onClick={handleOpenVideo}
             >
               <XMarkIcon className="h-4 w-4 stroke-2" />
             </IconButton>
@@ -165,12 +225,121 @@ export function AddVideoDialog() {
             </label>
           </DialogBody>
           <DialogFooter>
-            <Button className="ml-auto" type="submit" disabled={uploading}>
+            <Button className="ml-auto" type="submit" disabled={uploading} loading={uploading} >
               {uploading ? "Uploading..." : "Add video"}
             </Button>
           </DialogFooter>
           </form>
         </Dialog>
+
+         {/* Dialog for setting the owner */}
+         <Dialog size="sm" open={openOwner} handler={handleOpenOwner} className="p-4">
+          <form onSubmit={onSubmitOwner}>
+          <DialogHeader className="relative m-0 block">
+            <Typography variant="h4" color="blue-gray">
+              Defined the owner
+            </Typography>
+            <Typography className="mt-1 font-normal text-gray-600">
+              Defined the royalties
+            </Typography>
+            <IconButton
+              size="sm"
+              variant="text"
+              className="!absolute right-3.5 top-3.5"
+              onClick={handleOpenOwner}
+            >
+              <XMarkIcon className="h-4 w-4 stroke-2" />
+            </IconButton>
+          </DialogHeader>
+          <DialogBody className="space-y-4 pb-6">
+              
+          <div className="flex items-center gap-4">
+          <div className="w-1/2">
+                <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="mb-2 text-left font-medium"
+                    >
+                      Owner Address
+                    </Typography>
+              </div>
+              <div className="w-1/2">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="mb-2 text-left font-medium"
+                    >
+                      Share Percent
+                    </Typography>
+                    </div>
+          </div>
+            {ownerAddresses.map((ownerAddress, key) => {
+              return (
+                <div key={key} className="flex items-center gap-4">
+                  <div className="w-1/2">
+                    <Input
+                      color="gray"
+                      size="lg"
+                      placeholder="0x00...00"
+                      name="owner"
+                      className="placeholder:opacity-100 focus:!border-t-gray-900 min-w-[72px]"
+                      required
+                      containerProps={{
+                        className: "!min-w-full",
+                      }}
+                      labelProps={{
+                        className: "hidden",
+                      }}
+                      onChange={(e) => handleChange(key, "address", e)}
+                      value={ownerAddress.address}
+                    />
+                  </div>
+                  <div className="w-1/4">
+                    <Input
+                      color="gray"
+                      size="lg"
+                      placeholder="100%"
+                      name="percent"
+                      type="number"
+                      required
+                      className="placeholder:opacity-100 focus:!border-t-gray-900 min-w-[72px]"
+                      containerProps={{
+                        className: "!min-w-full",
+                      }}
+                      labelProps={{
+                        className: "hidden",
+                      }}
+                      onChange={(e) => handleChange(key, "percent", e)}
+                      value={ownerAddress.percent}
+                    />
+                  </div>
+                  <div className="w-1/4">
+                  <Button className="mr-3" disabled={uploading || isPending} loading={uploading} onClick={handleRemoveOwner}>
+                    X
+                  </Button>
+                  </div>
+                </div>
+              );
+            })}  
+          </DialogBody>
+
+          <DialogFooter>
+
+            <div>
+              {isError && error && error.message}
+            </div>
+
+            <Button className="mr-3" disabled={uploading | isPending} onClick={addOwnerEntry}>
+              Add new owner
+            </Button>
+
+            <Button className="" variant="outlined" type="submit" disabled={uploading || isPending} loading={uploading || isPending} >
+              {uploading ? "Confirming..." : "Validate"}
+            </Button>
+          </DialogFooter>
+          </form>
+        </Dialog>
+      
       
     </>
   );

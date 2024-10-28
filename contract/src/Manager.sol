@@ -9,7 +9,7 @@ import {Video} from "./Video.sol";
 
 contract Manager {
 
-    Video video;
+    address public videoAddress;
 
     // User access to the video
     // FIXME: Maybe use NFT instead allowing future resell of access token
@@ -17,7 +17,7 @@ contract Manager {
     mapping(uint256 => mapping (address => bool)) public access;
 
     constructor() {
-        video = new Video(address(this));
+        videoAddress = address(new Video(address(this)));
     }
 
     function addNewVideo(
@@ -28,6 +28,7 @@ contract Manager {
     {
         SharedOwnership sharedOwner = new SharedOwnership(owners, allocation);
         
+        Video video = Video(videoAddress);
         uint256 videoId = video.addNewVideo(address(sharedOwner), videoURI);
 
         // Give access to the video for all owners

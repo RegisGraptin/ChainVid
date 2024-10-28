@@ -21,7 +21,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <VideoCarousel videos={[1,2,3,4,5,8,9]}/>
+        <VideoCarousel />
       </main>
 
       <footer className={styles.footer}>

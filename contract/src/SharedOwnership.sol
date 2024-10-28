@@ -13,9 +13,9 @@ contract SharedOwnership is ERC20 {
         address[] memory _owners, 
         uint256[] memory allocation
     ) ERC20("OWNERSHIP", "OWS") {
-        owners = _owners;
         for (uint256 i = 0; i < owners.length; i++) {
-            _mint(owners[i], allocation[i]);
+            owners.push(_owners[i]);
+            _mint(_owners[i], allocation[i]);
         }
     }
 
