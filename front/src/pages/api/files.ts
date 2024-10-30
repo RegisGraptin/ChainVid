@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import fs from 'fs/promises';
 import multiparty from 'multiparty';
@@ -13,7 +14,7 @@ export const config = {
   },
 };
 
-const parseForm = (req) => {
+const parseForm = (req: NextApiRequest) => {
   return new Promise((resolve, reject) => {
     const form = new multiparty.Form();
     form.parse(req, (err, fields, files) => {

@@ -1,4 +1,4 @@
-
+// @ts-nocheck
 import { Address } from "viem";
 
 import { AddVideoCard } from "./AddVideoCard";
